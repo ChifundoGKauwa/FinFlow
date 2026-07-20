@@ -1,0 +1,4 @@
+{
+    "dotnet.defaultSolution": "FinFlow.slnx",
+    "python-envs.defaultEnvManager": "ms-python.python:system"
+}
