@@ -1,0 +1,77 @@
+@FinFlow_HostAddress = http://localhost:5140
+
+GET {{FinFlow_HostAddress}}/customers
+Accept: application/json
+
+###
+
+GET {{FinFlow_HostAddress}}/customers/3
+Accept: application/json
+
+###
+POST {{FinFlow_HostAddress}}/customers
+Content-Type: application/json
+
+{
+  "firstName": "precious",
+  "lastName": "Banda",
+  "dateOfBirth": "1970-04-01",
+  "gender": "Male",
+  "phoneNumber": "123-456-7888",
+  "email": "l.banda@example.com"
+}
+
+###
+PUT {{FinFlow_HostAddress}}/customers/3
+Content-Type: application/json
+
+{
+  "firstName": "lameck",
+  "lastName": "Banda",
+  "dateOfBirth": "1990-01-01",
+  "gender": "Male",
+  "phoneNumber": "123-456-7899",
+  "email": "l.banda@example.com"
+}
+
+###
+DELETE {{FinFlow_HostAddress}}/customers/8
+
+###
+GET {{FinFlow_HostAddress}}/accounts
+Accept: application/json
+
+###
+GET {{FinFlow_HostAddress}}/accounts/2
+Accept: application/json
+
+###
+POST {{FinFlow_HostAddress}}/accounts
+Content-Type: application/json 
+
+{
+  "accountNumber": "1234567890",
+  "accountType": "Savings",
+  "balance": 1300.00,
+  "branchName": "zomba branch",
+  "accountStatus": "Active",
+  "customerId": 1,
+  "currencyType": "MWK"
+}
+
+###
+PUT {{FinFlow_HostAddress}}/accounts/2
+Content-Type: application/json  
+
+{
+  "accountNumber": "1234567890",
+  "accountType": "Savings",
+  "balance": 11500000.00,
+  "branchName": "lilongwe branch",
+  "accountStatus": "Active",
+  "customerId": 1,
+  "currencyType": "MWK"
+}
+
+###
+DELETE {{FinFlow_HostAddress}}/accounts/2
