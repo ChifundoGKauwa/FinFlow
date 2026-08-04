@@ -1,3 +1,5 @@
+from datetime import timezone
+
 from faker import Faker
 fake = Faker()
 def generate_transaction(account_id):
@@ -13,5 +15,6 @@ def generate_transaction(account_id):
         "Description": fake.sentence(nb_words=12),
         "transactionReference": fake.uuid4(),
         "transactionTimeStamp": fake.date_time_this_decade().astimezone().isoformat(),
+         "transactionDate": fake.date_time_this_decade(tzinfo=timezone.utc).isoformat().replace("+00:00", "Z"),
     }
     return transaction

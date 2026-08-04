@@ -1,0 +1,101 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: FinFlowDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: '@114fundo'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d FinFlowDb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: chifundo
+      MINIO_ROOT_PASSWORD: "@114fundo"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  finflow-api:
+    build:
+      context: ./FinFlow
+      dockerfile: Dockerfile
+    environment:
+      ConnectionStrings__DefaultConnection: "${CONNECTIONSTRINGS__DEFAULTCONNECTION:-Host=postgres;Port=5432;Database=FinFlowDb;Username=postgres;Password=@114fundo}"
+      ASPNETCORE_ENVIRONMENT: Development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "5140:8080"
+    restart: unless-stopped
+    # Healthcheck ensures EF Core migrations finish & port 8080 accepts connections
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  datagenerator:
+    build:
+      context: ./DataGenerator
+      dockerfile: Dockerfile
+    environment:
+      DATA_GENERATOR_API_URL: "${DATA_GENERATOR_API_URL:-http://finflow-api:8080}"
+    depends_on:
+      finflow-api:
+        condition: service_healthy
+    restart: "no"
+  duckdb:
+    build:
+      context: ./duckdb
+    container_name: finflow-duckdb
+    depends_on:
+      minio:
+        condition: service_healthy
+    volumes:
+      - ./duckdb/data:/data
+    
+
+  datapipeline:
+    build:
+      context: ./DataPipeline
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: "${DATABASE_URL:-postgresql+psycopg2://postgres:%40114fundo@postgres:5432/FinFlowDb}"
+      ACCESS_KEY: "${ACCESS_KEY:-chifundo}"
+      SECRET_KEY: "${SECRET_KEY:-@114fundo}"
+      END_POINT: "${END_POINT:-minio:9000}"
+      PYTHONUNBUFFERED: "1"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      finflow-api:
+        condition: service_healthy
+    restart: "no"
+    volumes:
+      - pipeline_data:/app/data
+
+volumes:
+  postgres_data:
+  minio_data:
+  pipeline_data:

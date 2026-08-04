@@ -35,14 +35,55 @@ loader.write(cleaned_customers,"silver","cleaned_customers")
 loader.write(cleaned_transactions,"silver","cleaned_transaction")
 
 
-dim_accounts, dim_customers, fact_transactions = gold_layer(
+fact_transactions,dim_account,dim_customer,dim_date,dim_branch,dim_channel,dim_transaction_status,dim_transaction_type,dim_currency= gold_layer(
     cleaned_accounts, 
     cleaned_transactions, 
     cleaned_customers
 )
 # loading into gold
-loader.write(dim_accounts, "gold", "dim_accounts")
-loader.write(dim_customers, "gold", "dim_customers")
-loader.write(fact_transactions, "gold", "fact_transactions")
+# loading into gold
+
+loader.write(
+    dim_account,
+    "gold",
+    "dim_accounts"
+)
+
+loader.write(
+    dim_customer,
+    "gold",
+    "dim_customers"
+)
+
+loader.write(
+    dim_date,
+    "gold",
+    "dim_date"
+)
+
+loader.write(
+    dim_branch,
+    "gold",
+    "dim_branch"
+)
+
+loader.write(
+    dim_channel,
+    "gold",
+    "dim_channel"
+)
+
+loader.write(
+    dim_transaction_status,
+    "gold",
+    "dim_transaction_status"
+)
+
+loader.write(
+    fact_transactions,
+    "gold",
+    "fact_transactions"
+)
+
 
 

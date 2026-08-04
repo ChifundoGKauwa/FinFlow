@@ -1,3 +1,14 @@
 appsettings.json
+bin/
+obj/
+
 
 .venv/
+.vscode/
+docker-compose/
+.dockerignore
+.dataGenerator/
+.datapipeline/
+
+*.deb
+*.rpm
